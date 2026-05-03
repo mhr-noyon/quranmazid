@@ -5,6 +5,13 @@
   --foreground: #111111;
   --surface: #ffffff;
   --border: #e6e4de;
+  --primary-green: #428038;
+  --primary-ash: #818683;
+  --primary-white: #c3c3c4;
+  --primary-black: #0d0d0d;
+  --another: #8eb388;
+  --font-inter: "__Inter_e97114", "__Inter_Fallback_e97114";
+  --font-kalpurush: "__kalpurush_83740d", "__kalpurush_Fallback_83740d";
 }
 
 @theme inline {
@@ -26,5 +33,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-kalpurush), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }

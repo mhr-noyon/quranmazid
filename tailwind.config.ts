@@ -1,10 +1,17 @@
 import type { Config } from "tailwindcss";
 
-const config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+const config: Config = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'icon-color': '#94a3b8',
+      },
+    },
   },
   plugins: [],
 } satisfies Config;
