@@ -12,6 +12,7 @@
   --another: #8eb388;
   --font-inter: "__Inter_e97114", "__Inter_Fallback_e97114";
   --font-kalpurush: "__kalpurush_83740d", "__kalpurush_Fallback_83740d";
+  --font-calligraphy: "__calligraphy_e58de2", "__calligraphy_Fallback_e58de2";
 }
 
 @theme inline {
@@ -21,6 +22,34 @@
   --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  /* 1. Webkit Browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 6px; /* Slimmer width */
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Makes the track invisible */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #e4e4e7; /* zinc-200 */
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #10b981; /* emerald-500 or your primary-green */
+  }
+
+  /* 2. Firefox Support */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #e4e4e7 transparent;
+  }
 }
 
 .dark {

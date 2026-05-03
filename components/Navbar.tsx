@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { SearchIcon, ThemeMoonIcon, SettingsGearIcon, SupportHeartIcon } from "./icons";
+import { TextAlignJustify, X } from "lucide-react";
 
 /* ================= Icon Button ================= */
 const IconButton = ({
@@ -48,7 +49,13 @@ const IconButton = ({
 };
 
 /* ================= Navbar ================= */
-export const Navbar = () => {
+export const Navbar = ({
+  onMenuClick,
+  isDrawerOpen,
+}: {
+  onMenuClick?: () => void;
+  isDrawerOpen?: boolean;
+}) => {
   const items = [
     { label: "Search", icon: <SearchIcon /> },
     { label: "Theme", icon: <ThemeMoonIcon /> },
@@ -64,15 +71,24 @@ export const Navbar = () => {
         border-b border-zinc-200
         bg-white px-6
         dark:bg-zinc-950 dark:border-zinc-800
+        px-6 py-3
       "
     >
       {/* LEFT */}
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="relative z-50 flex items-center justify-center rounded-full border border-zinc-200 p-2 text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-200 md:hidden"
+          aria-label="Toggle surah drawer"
+        >
+          {isDrawerOpen ? <X size={18} /> : <TextAlignJustify size={18} />}
+        </button>
         <div className="leading-tight">
-          <p className="text-lg font-bold text-[var(--primary-white)]">
+          <p className="text-base font-bold md:text-lg text-[var(--primary-white)]">
             Quran Mazid
           </p>
-          <p className="text-[10px] text-zinc-500">
+          <p className="text-[10px] text-zinc-500 max-md:hidden">
             Read, Study, and Learn The Quran
           </p>
         </div>
@@ -94,6 +110,7 @@ export const Navbar = () => {
             text-white text-sm font-medium
             transition-all duration-300
             hover:opacity-90 active:scale-95
+            max-md:hidden
           "
         >
           Support Us <SupportHeartIcon />
