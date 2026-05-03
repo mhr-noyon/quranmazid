@@ -25,6 +25,7 @@ type Surah = {
 };
 
 export default function Home() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [surahs, setSurahs] = useState<SurahIndexItem[]>([]);
   const [selectedSurahId, setSelectedSurahId] = useState<number | null>(null);
   const [surah, setSurah] = useState<Surah | null>(null);
@@ -40,6 +41,10 @@ export default function Home() {
   const currentVerseId = startVerse !== null && currentIndex >= 0
     ? startVerse + currentIndex
     : null;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     let isMounted = true;
@@ -198,8 +203,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 px-6 py-10 text-zinc-900">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="min-h-screen bg-white text-zinc-900 dark:bg-black dark:text-zinc-100">
+      
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-10">
         <header className="space-y-1">
           <h1 className="text-2xl font-semibold">Quran Audio Test</h1>
           <p className="text-sm text-zinc-500">
@@ -207,12 +213,12 @@ export default function Home() {
           </p>
         </header>
 
-        <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
+        <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
           <div className="grid gap-4">
             <label className="text-sm font-medium">
               Surah
               <select
-                className="mt-2 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
+                className="mt-2 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
                 value={selectedSurahId ?? ""}
                 onChange={(event) =>
                   setSelectedSurahId(
@@ -233,7 +239,7 @@ export default function Home() {
               <label className="text-sm font-medium">
                 Start ayah (dropdown shows verses)
                 <select
-                  className="mt-2 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
+                  className="mt-2 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
                   value={startVerse ?? ""}
                   onChange={(event) =>
                     setStartVerse(
@@ -260,14 +266,14 @@ export default function Home() {
               Load & Play
             </button>
             <button
-              className="rounded border border-zinc-300 px-4 py-2 text-sm"
+              className="rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
               onClick={handlePause}
               disabled={!isPlaying}
             >
               Pause
             </button>
             <button
-              className="rounded border border-zinc-300 px-4 py-2 text-sm"
+              className="rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
               onClick={handleResume}
               disabled={isPlaying || currentIndex < 0}
             >
@@ -289,7 +295,7 @@ export default function Home() {
         </section>
 
         {surah && (
-          <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
+          <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
             <h2 className="text-base font-semibold">
               {surah.name} - {surah.translation}
             </h2>
