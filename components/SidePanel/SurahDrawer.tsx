@@ -172,7 +172,7 @@ export const SurahDrawer = ({
           <button
             type="button"
             onClick={onClose}
-            className="mt-1 flex items-center justify-center rounded-full border border-[var(--border)] p-2 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
+            className="mt-1 flex items-center justify-center rounded-full border border-[var(--border)] p-2 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] cursor-pointer"
             aria-label="Close surah drawer"
           >
             <X size={18} />
@@ -299,7 +299,7 @@ export const SurahDrawer = ({
                           <button
                             onClick={() => setExpandedJuz(isExpanded ? null : juz.juz_number)}
                             className={`cursor-pointer group flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-5 text-left transition hover:bg-[var(--bg-dark-green)]/6 hover:border-[var(--primary-green)]/40 transition-all duration-200 ${
-                              isActive || isExpanded ? "border-[var(--primary-green)]/40 bg-[var(--bg-dark-green)]/6 text-[var(--text-primary)]" : "border-[var(--border)]/10 hover:border-[var(--primary-green)]/20"
+                              isExpanded || isActive ? "border-[var(--primary-green)]/40 bg-[var(--bg-dark-green)]/6 text-[var(--text-primary)]" : "border-[var(--border)]/10 hover:border-[var(--primary-green)]/20 text-[var(--text-primary)]"
                             }`}
                           >
                             <div className="flex items-center gap-4">
@@ -346,7 +346,7 @@ export const SurahDrawer = ({
                                             if (onSurahSelect) onSurahSelect(s);
                                             onClose();
                                           }}
-                                          className="flex w-full items-center justify-between p-3 rounded-xl hover:bg-[var(--surface-secondary)] transition-colors text-left"
+                                          className="flex w-full items-center justify-between p-3 rounded-xl hover:bg-[var(--surface-secondary)] transition-colors text-left cursor-pointer"
                                         >
                                           <div className="flex items-center gap-3">
                                             <div className={`h-6 w-6 rotate-45 border border-[var(--border)]/10 flex items-center justify-center rounded-md text-[8px] font-bold text-[var(--text-secondary)] group-hover:bg-[var(--bg-dark-green)] group-hover:text-white transition-colors duration-200 bg-[var(--surface-secondary)]`}>
