@@ -19,7 +19,7 @@ export const AudioPlayer = () => {
   }
 
   return (
-    <div className="relative w-full shrink-0 z-40 bg-[var(--primary-ash)/50] px-4 md:px-8 py-3 flex items-center justify-between text-white shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+    <div className="relative w-full shrink-0 z-40 bg-[var(--surface-secondary)] px-4 md:px-8 py-3 flex items-center justify-between text-white shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
       
       {/* Track Info */}
       <div className="hidden md:block flex items-center gap-4 w-1/4">
@@ -35,7 +35,7 @@ export const AudioPlayer = () => {
         
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 w-full flex items-center gap-3 text-xs text-zinc-500 font-mono">
-          <div className="h-1 flex-1 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-1 flex-1 bg-[var(--surface)] rounded-full overflow-hidden">
             <div 
               className="h-full bg-[var(--primary-green)] rounded-full transition-all duration-300 ease-linear"
               style={{ width: `${totalDuration > 0 ? (elapsedTime / totalDuration) * 100 : 0}%` }}
