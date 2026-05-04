@@ -67,7 +67,7 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col md:flex-row gap-4 border md:gap-6 px-4 md:px-6 p-4 md:pt-6 border-b border-[var(--border)]/10 transition-colors scroll-mt-24 ${
+      className={`flex flex-col md:flex-row gap-3 md:gap-4 px-4 md:px-5 p-3 md:py-4 border-b border-[var(--border)]/10 transition-colors scroll-mt-24 ${
         isCurrentPlaying ? "bg-(--primary-green)/15 rounded-xl" : ""
       }`}
     >
@@ -99,7 +99,7 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
       </div>
 
       {/* Right Column - Arabic & Translation */}
-      <div className="flex-1 flex flex-col gap-6 pt-8 md:pt-12">
+      <div className="flex-1 flex flex-col gap-4 pt-4 md:pt-6">
         <div
           dir="rtl"
           style={{
@@ -107,14 +107,14 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
             fontFamily: getFontFamily(),
             lineHeight: "1.8",
           }}
-          className={`text-right ${
+          className={`text-right pt-10 lg:pt-16 ${
             isCurrentPlaying ? "text-[var(--primary-green)]" : "text-[var(--text-primary)]/70"
           } transition-colors duration-300`}
         >
           {verse.text}
-          <span className="inline-flex items-center justify-center relative mx-2 translate-y-[3px]">
-             <span className="text-[1.3em] leading-none opacity-80 font-islamic">۝</span>
-             <span className="absolute inset-0 flex items-center justify-center text-[0.35em] font-sans font-bold pb-1">
+          <span className="inline-flex items-center justify-center relative mx-1 translate-y-[4px]">
+             <span className="text-[1.2em] leading-none opacity-90 font-islamic">۝</span>
+             <span className="absolute inset-0 flex items-center justify-center text-[0.4em] font-sans font-bold translate-y-[-1px]">
                {toArabicNumber(verse.id)}
              </span>
           </span>

@@ -84,7 +84,7 @@ export const Navbar = ({
         sticky top-0 z-50
         flex h-[60px] w-full
         items-center justify-between
-        border-b border-[var(--border)]
+        border-b border-[var(--border)]/10
         bg-[var(--surface)]
         px-6 py-2
       "
