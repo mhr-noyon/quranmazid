@@ -47,24 +47,24 @@ export const AudioPlayer = () => {
 
         <div className="flex items-center gap-4 md:gap-10">
           <span className="text-xs md:text-sm text-zinc-400">{formatTime(elapsedTime)}</span>
-          <button className="text-zinc-400 hover:text-white transition-colors">
+          <button className="text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <MoreHorizontal size={20} />
           </button>
-          <button className="text-zinc-400 hover:text-white transition-colors">
+          <button className="text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <SkipBack size={20} />
           </button>
           
           <button
             onClick={isPlaying ? pause : resume}
-            className="w-10 h-10 rounded-full bg-[var(--primary-green)] flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all"
+            className="w-10 h-10 rounded-full bg-[var(--primary-green)] flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
           
-          <button className="text-zinc-400 hover:text-white transition-colors">
+          <button className="text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <SkipForward size={20} />
           </button>
-          <button onClick={stop} className="text-zinc-400 hover:text-white transition-colors" aria-label="Close Player">
+          <button onClick={stop} className="text-zinc-400 hover:text-white transition-colors cursor-pointer" aria-label="Close Player">
           <X size={20} />
         </button>
         

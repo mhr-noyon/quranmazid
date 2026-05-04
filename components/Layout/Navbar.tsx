@@ -19,23 +19,24 @@ const IconButton = ({
     <div className="relative group flex flex-col items-center">
       <button
         onClick={onClick}
-        className="
+        className={`
           cursor-pointer
           flex size-[34px] min-w-[34px]
           items-center justify-center
           rounded-full
-          bg-[var(--bg-secondary)]
+          bg-[var(--surface-secondary)]
           text-[var(--primary-green)]
           transition-all duration-300 ease-out
           hover:scale-105 active:scale-90
           [&>svg]:size-[18px]
-        "
+          ${label=='Settings' ? "xl:hidden" : ""}  
+        `}
       >
         {icon}
       </button>
 
       <span
-        className="
+        className={`
           pointer-events-none
           absolute top-full mt-2
           whitespace-nowrap
@@ -45,7 +46,8 @@ const IconButton = ({
           opacity-0 scale-95
           transition-all duration-200
           group-hover:opacity-100 group-hover:scale-100
-        "
+          ${label=='Settings' ? "xl:hidden" : ""}  
+        `}
       >
         {label}
       </span>

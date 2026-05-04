@@ -76,7 +76,7 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
         <span className="font-semibold text-[var(--primary-green)]">
           {surahId}:{verse.id}
         </span>
-        <button className="p-2 text-zinc-500 hover:text-[var(--primary-green)]">
+        <button className="p-2 text-zinc-500 hover:text-[var(--primary-green)] cursor-pointer">
           <MoreVertical size={20} />
         </button>
       </div>
@@ -133,7 +133,7 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
         </div>
         
         <div className="flex md:hidden gap-4 mt-2">
-            <button onClick={handlePlayClick} className="flex items-center gap-2 text-sm text-[var(--primary-green)] font-medium">
+            <button onClick={handlePlayClick} className="flex items-center gap-2 text-sm text-[var(--primary-green)] font-medium cursor-pointer">
                {isCurrentPlaying && isPlaying ? <Pause size={16}/> : <Play size={16}/>} 
                {isCurrentPlaying && isPlaying ? "Pause" : "Play"}
             </button>
