@@ -18,8 +18,8 @@ export const RightPanel = () => {
   } = useSettings();
 
   const [activeTab, setActiveTab] = useState<"Translation" | "Reading">("Translation");
-
-  const [isFontSettingsOpen, setIsFontSettingsOpen] = useState(true);
+  const [currentView, setCurrentView] = useState<"main" | "font-face">("main");
+  const [expandedSection, setExpandedSection] = useState<"reading" | "font" | "mushaf" | null>("reading");
 
   // Tab switching animation
   const slideVariants = {
@@ -31,7 +31,7 @@ export const RightPanel = () => {
       x: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30,
       },
@@ -49,179 +49,371 @@ export const RightPanel = () => {
     if (tab === activeTab) return;
     setDirection(tab === "Reading" ? 1 : -1);
     setActiveTab(tab);
+    setCurrentView("main"); // Reset view on tab change
+  };
+
+  const drillDownVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? "100%" : "-100%",
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.3, ease: "easeInOut" }
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? "100%" : "-100%",
+      opacity: 0,
+      transition: { duration: 0.3, ease: "easeInOut" }
+    })
+  };
+
+  const [drillDirection, setDrillDirection] = useState(0);
+
+  const navigateTo = (view: "main" | "font-face") => {
+    setDrillDirection(view === "font-face" ? 1 : -1);
+    setCurrentView(view);
   };
 
   const PanelContent = (
-    <div className="flex flex-col h-full bg-zinc-950 border-l border-zinc-800 w-full max-w-sm ml-auto">
+    <div className="flex flex-col h-full bg-[var(--surface)] border-l border-[var(--border)]/10 w-full max-w-sm ml-auto">
       {/* Mobile Header */}
-      <div className="flex items-center justify-between p-4 border-b border-zinc-800 md:hidden">
-        <h2 className="text-white font-semibold">Settings</h2>
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border)] xl:hidden">
+        <h2 className="text-[var(--text-primary)] font-semibold">Settings</h2>
         <button
           onClick={() => setIsMobileSettingsOpen(false)}
-          className="p-2 text-zinc-400 hover:text-white transition-colors"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <X size={20} />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="p-4 pb-0 flex gap-2">
-        <button
-          onClick={() => handleTabChange("Translation")}
-          className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
-            activeTab === "Translation"
-              ? "bg-zinc-800 text-white"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-        >
-          Translation
-        </button>
-        <button
-          onClick={() => handleTabChange("Reading")}
-          className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
-            activeTab === "Reading"
-              ? "bg-zinc-800 text-white"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-        >
-          Reading
-        </button>
+      <div className="p-4">
+        <div className="flex rounded-full bg-[var(--surface-secondary)] p-1 text-sm font-medium text-[var(--text-secondary)]">
+          {["Translation", "Reading"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => handleTabChange(tab as any)}
+              className={`cursor-pointer relative flex-1 py-1.5 px-4 text-sm font-medium transition-colors z-10 ${
+                activeTab === tab
+                  ? "text-[var(--text-primary)] font-bold"
+                  : "text-[var(--text-secondary)]/60"
+              }`}
+            >
+              {activeTab === tab && (
+                <motion.div
+                  layoutId="activeTab-settings"
+                  className="absolute inset-0 rounded-full bg-[var(--background)] shadow-sm z-[-1]"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 relative hide-scrollbar">
-        <AnimatePresence mode="wait" custom={direction}>
-          {activeTab === "Translation" && (
+      <div className="flex-1 overflow-hidden relative">
+        <AnimatePresence mode="wait" initial={false} custom={drillDirection}>
+          {currentView === "main" ? (
             <motion.div
-              key="Translation"
-              custom={direction}
-              variants={slideVariants}
-              initial="hidden"
-              animate="visible"
+              key="main"
+              custom={drillDirection}
+              variants={drillDownVariants}
+              initial="enter"
+              animate="center"
               exit="exit"
-              className="flex flex-col gap-6"
+              className="absolute inset-0 overflow-y-auto p-4 hide-scrollbar flex flex-col gap-6"
             >
-              {/* Reading Settings Demo */}
-              <div className="flex flex-col gap-4">
-                <button className="flex items-center justify-between text-sm text-zinc-300">
-                  <div className="flex items-center gap-2">
-                    <BookOpenText className="text-[var(--primary-green)] w-5 h-5"/> Reading Settings
-                  </div>
-                  {isFontSettingsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
-                {/* Demo Selectors */}
-                <div className="flex flex-col gap-3 pl-6 border-l border-zinc-800 ml-2">
-                  <div className="flex flex-col gap-1 text-xs">
-                    <label className="text-zinc-500">Translations</label>
-                    <select className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded p-1 outline-none">
-                      <option>Saheeh International</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-1 text-xs">
-                    <label className="text-zinc-500">Word-by-word translations</label>
-                    <select className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded p-1 outline-none">
-                      <option>Bengali</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span>Show by words</span>
-                    <div className="w-8 h-4 bg-zinc-800 rounded-full flex items-center p-[2px] cursor-pointer">
-                      <div className="w-3 h-3 bg-zinc-500 rounded-full" />
+              <AnimatePresence mode="wait" custom={direction}>
+                {activeTab === "Translation" && (
+                  <motion.div
+                    key="Translation"
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="flex flex-col gap-6"
+                  >
+                    {/* Reading Settings Dropdown */}
+                    <div className="flex flex-col gap-4">
+                      <button 
+                        onClick={() => setExpandedSection(expandedSection === "reading" ? null : "reading")}
+                        className={`flex items-center justify-between text-sm cursor-pointer group transition-colors ${
+                          expandedSection === "reading" ? "text-[var(--primary-green)]" : "text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 group-hover:text-[var(--text-primary)] transition-colors">
+                          <BookOpenText className="w-5 h-5"/> 
+                          <span className="font-bold">Reading Settings</span>
+                        </div>
+                        <motion.div animate={{ rotate: expandedSection === "reading" ? 0 : -90 }} transition={{ duration: 0.2 }}>
+                          <ChevronDown size={18} />
+                        </motion.div>
+                      </button>
+                      
+                      <AnimatePresence>
+                        {expandedSection === "reading" && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex flex-col gap-5 py-2">
+                              <div className="flex flex-col gap-1.5">
+                                <label className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest">Translations</label>
+                                <div className="relative">
+                                  <select className="w-full appearance-none bg-[var(--surface-secondary)] border border-[var(--border)]/10 text-[var(--text-primary)] rounded-xl p-3 text-xs outline-none focus:border-(--primary-green)/40 cursor-pointer">
+                                    <option>Saheeh International</option>
+                                  </select>
+                                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none" size={14} />
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-1.5">
+                                <label className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest">Word-by-word</label>
+                                <div className="relative">
+                                  <select className="w-full appearance-none bg-[var(--surface-secondary)] border border-[var(--border)]/10 text-[var(--text-primary)] rounded-xl p-3 text-xs outline-none focus:border-(--primary-green)/40 cursor-pointer">
+                                    <option>Bengali</option>
+                                  </select>
+                                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none" size={14} />
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between text-xs text-[var(--text-primary)] font-medium bg-[var(--surface-secondary)] p-3 rounded-xl border border-[var(--border)]/10">
+                                <span>Show by words</span>
+                                <button className="w-8 h-4.5 bg-[var(--primary-green)] rounded-full flex items-center p-0.5 justify-end cursor-pointer transition-colors shadow-inner">
+                                  <motion.div layout className="w-3.5 h-3.5 bg-white rounded-full shadow-sm" />
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span>Tajweed</span>
-                    <div className="w-8 h-4 bg-zinc-800 rounded-full flex items-center p-[2px] cursor-pointer">
-                      <div className="w-3 h-3 bg-zinc-500 rounded-full" />
+
+                    {/* Font Settings Dropdown */}
+                    <div className="flex flex-col gap-4">
+                      <button
+                        onClick={() => setExpandedSection(expandedSection === "font" ? null : "font")}
+                        className={`flex items-center justify-between text-sm cursor-pointer group transition-colors ${
+                          expandedSection === "font" ? "text-[var(--primary-green)]" : "text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 group-hover:text-[var(--text-primary)] transition-colors">
+                          <div className={`p-1 rounded-md transition-colors ${
+                            expandedSection === "font" ? "bg-(--primary-green)/10" : "bg-[var(--bg-secondary)]"
+                          }`}>
+                             <span className="font-bold">Aa</span>
+                          </div>
+                          <span className="font-bold">Font Settings</span>
+                        </div>
+                        <motion.div animate={{ rotate: expandedSection === "font" ? 0 : -90 }} transition={{ duration: 0.2 }}>
+                          <ChevronDown size={18} />
+                        </motion.div>
+                      </button>
+
+                      <AnimatePresence>
+                        {expandedSection === "font" && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex flex-col gap-6 py-2">
+                              <div className="flex flex-col gap-2">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-widest">Arabic Font Size</span>
+                                  <span className="bg-(--primary-green)/10 px-2 py-0.5 rounded text-[var(--primary-green)] font-mono text-[10px]">{arabicFontSize}px</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="18"
+                                  max="100"
+                                  value={arabicFontSize}
+                                  onChange={(e) => setArabicFontSize(Number(e.target.value))}
+                                  className="w-full h-1.5 bg-[var(--surface-secondary)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-green)]"
+                                />
+                              </div>
+
+                              <div className="flex flex-col gap-2">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-widest">Translation Font Size</span>
+                                  <span className="bg-(--primary-green)/10 px-2 py-0.5 rounded text-[var(--primary-green)] font-mono text-[10px]">{translationFontSize}px</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="14"
+                                  max="44"
+                                  value={translationFontSize}
+                                  onChange={(e) => setTranslationFontSize(Number(e.target.value))}
+                                  className="w-full h-1.5 bg-[var(--surface-secondary)] rounded-lg appearance-none cursor-pointer accent-[var(--primary-green)]"
+                                />
+                              </div>
+                              
+                              <button
+                                onClick={() => navigateTo("font-face")}
+                                className="flex items-center justify-between p-4 bg-[var(--surface-secondary)] rounded-xl border border-[var(--border)]/10 hover:border-(--primary-green)/40 transition-all group cursor-pointer"
+                              >
+                                <div className="flex flex-col items-start gap-1">
+                                  <span className="text-[10px] uppercase tracking-widest text-[var(--text-secondary)] font-bold">Arabic Font Face</span>
+                                  <span className="text-sm font-semibold text-[var(--text-primary)]">
+                                    {arabicFontFace === "var(--font-amiri-quran)" ? "Amiri Quran" : 
+                                     arabicFontFace === "KFGQ" ? "KFGQPC Uthman" : "PDMS Islamic"}
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-[var(--text-secondary)] group-hover:text-[var(--primary-green)] transition-colors">
+                                   <ChevronDown size={18} className="-rotate-90" />
+                                </div>
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  </div>
+
+                    {/* Support Box */}
+                    <div className="mt-4 p-3 bg-(--primary-green)/5 rounded-2xl border border-(--primary-green)/10 flex flex-col gap-2 relative overflow-hidden group">
+                      <h3 className="text-[var(--text-primary)] font-bold text-base">Help spread the knowledge of Islam</h3>
+                      <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed relative z-10">
+                        Your regular support helps us reach our religious brothers and sisters with the message of Islam. Join our mission and be part of the big change.
+                      </p>
+                      <button className="w-full py-2.5 bg-[var(--primary-green)] text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-900/20 transition-all active:scale-95 cursor-pointer">
+                        Support Our Mission
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === "Reading" && (
+                  <motion.div
+                    key="Reading"
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="flex flex-col gap-6"
+                  >
+                    <div className="flex flex-col gap-4">
+                      <button 
+                        onClick={() => setExpandedSection(expandedSection === "mushaf" ? null : "mushaf")}
+                        className={`flex items-center justify-between text-sm cursor-pointer group transition-colors ${
+                          expandedSection === "mushaf" ? "text-[var(--primary-green)]" : "text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 group-hover:text-[var(--text-primary)] transition-colors">
+                          <BookOpenText className="w-5 h-5"/> 
+                          <span className="font-bold">Change Mushaf</span>
+                        </div>
+                        <motion.div animate={{ rotate: expandedSection === "mushaf" ? 0 : -90 }} transition={{ duration: 0.2 }}>
+                          <ChevronDown size={18} />
+                        </motion.div>
+                      </button>
+                      
+                      <AnimatePresence>
+                        {expandedSection === "mushaf" && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex flex-col gap-3 py-2">
+                              {[
+                                { id: "unicode", name: "Unicode Text Mushaf" },
+                                { id: "hafezi", name: "Hafezi Quran Mushaf" },
+                                { id: "madani", name: "New Madani Mushaf" }
+                              ].map((mushaf) => (
+                                <label key={mushaf.id} className="flex items-center gap-3 cursor-pointer group p-2 rounded-xl hover:bg-[var(--bg-secondary)] transition-colors">
+                                  <div className={`relative flex items-center justify-center w-5 h-5 rounded-full border transition-all ${
+                                    mushaf.id === "unicode" ? "border-emerald-500 bg-emerald-500/10" : "border-[var(--border)]/20 bg-[var(--bg-secondary)]"
+                                  }`}>
+                                    {mushaf.id === "unicode" && (
+                                      <div className="w-2.5 h-2.5 rounded-full bg-[var(--primary-green)] shadow-sm" />
+                                    )}
+                                  </div>
+                                  <span className={`text-xs font-medium transition-colors ${
+                                    mushaf.id === "unicode" ? "text-[var(--primary-green)]" : "text-[var(--text-primary)] group-hover:text-[var(--primary-green)]"
+                                  }`}>
+                                    {mushaf.name}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            /* Drill-down Sub-view (Font Face) */
+            <motion.div
+              key="font-face"
+              custom={drillDirection}
+              variants={drillDownVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 p-4 flex flex-col gap-6"
+            >
+              <button 
+                onClick={() => navigateTo("main")}
+                className="flex items-center gap-2 text-sm font-semibold text-[var(--primary-green)] hover:translate-x-[-4px] transition-transform cursor-pointer"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Back to Settings
+              </button>
+
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-[var(--text-primary)]/80 font-bold text-lg">Select Font Face</h3>
+                  <p className="text-xs text-[var(--text-secondary)]">Choose the Arabic script that is easiest for you to read.</p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  {[
+                    { id: "var(--font-amiri-quran)", name: "Amiri Quran", desc: "Classical script from Quran.com" },
+                    { id: "KFGQ", name: "KFGQPC Uthmanic", desc: "Official Saudi Mushaf font" },
+                    { id: "PDMS-Islamic", name: "PDMS Islamic", desc: "Clean Indo-Pak script style" }
+                  ].map((font) => (
+                    <button
+                      key={font.id}
+                      onClick={() => {
+                        setArabicFontFace(font.id);
+                        navigateTo("main");
+                      }}
+                      className={`flex flex-col items-start gap-1 p-4 rounded-2xl border transition-all cursor-pointer text-left ${
+                        arabicFontFace === font.id 
+                          ? "bg-(--primary-green)/10 border-(--primary-green)/40" 
+                          : "bg-[var(--surface-secondary)] border-[var(--border)]/10 hover:border-(--primary-green)/20"
+                      }`}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <span className={`text-sm font-bold ${arabicFontFace === font.id ? "text-[var(--primary-green)]" : "text-[var(--text-primary)]/80"}`}>
+                          {font.name}
+                        </span>
+                        {arabicFontFace === font.id && (
+                          <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-[var(--text-secondary)]">{font.desc}</p>
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              {/* Font Settings */}
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={() => setIsFontSettingsOpen(!isFontSettingsOpen)}
-                  className="flex items-center justify-between text-sm text-[var(--primary-green)]"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="opacity-90 font-bold">T</span> Font Settings
-                  </div>
-                  {isFontSettingsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
-
-                {isFontSettingsOpen && (
-                  <div className="flex flex-col gap-6 pl-2">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-zinc-300 text-xs">Arabic Font Size</span>
-                        <span className="text-[var(--primary-green)] font-mono text-xs">{arabicFontSize}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="18"
-                        max="100"
-                        value={arabicFontSize}
-                        onChange={(e) => setArabicFontSize(Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[var(--primary-green)]"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-zinc-300 text-xs">Translation Font Size</span>
-                        <span className="text-[var(--primary-green)] font-mono text-xs">{translationFontSize}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="14"
-                        max="44"
-                        value={translationFontSize}
-                        onChange={(e) => setTranslationFontSize(Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[var(--primary-green)]"
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col gap-2">
-                      <span className="text-zinc-300 text-xs">Arabic Font Face</span>
-                      <select
-                        value={arabicFontFace}
-                        onChange={(e) => setArabicFontFace(e.target.value)}
-                        className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded p-2 text-sm outline-none w-full appearance-none"
-                      >
-                        <option value="var(--font-amiri-quran)">Amiri Quran</option>
-                        <option value="KFGQ">KFGQ</option>
-                        <option value="PDMS-Islamic">PDMS Islamic</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Dummy Support Box */}
-              <div className="mt-4 p-4 bg-zinc-900 rounded-xl border border-zinc-800/50 flex flex-col gap-3">
-                <h3 className="text-[var(--primary-white)] font-medium text-sm md:text-base">Help spread the knowledge of Islam</h3>
-                <p className="text-xs text-zinc-500 leading-relaxed">
-                  Your regular support helps us reach our religious brothers and sisters with the message of Islam. Join our mission and be part of the big change.
-                </p>
-                <button className="w-full py-2 bg-[var(--primary-green)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity">
-                  Support Us
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "Reading" && (
-            <motion.div
-              key="Reading"
-              custom={direction}
-              variants={slideVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="flex flex-col gap-4 text-center mt-10"
-            >
-              <p className="text-zinc-500 text-sm">Reading Mode Settings</p>
-              <p className="text-xs text-zinc-600">Additional options will appear here.</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -232,7 +424,7 @@ export const RightPanel = () => {
   return (
     <>
       {/* Desktop View */}
-      <div className="hidden md:block w-80 h-full shrink-0">
+      <div className="hidden xl:block w-80 h-full shrink-0">
         <div className="h-full">
           {PanelContent}
         </div>
@@ -247,14 +439,14 @@ export const RightPanel = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileSettingsOpen(false)}
-              className="fixed inset-0 bg-black/60 z-50 md:hidden"
+              className="fixed inset-0 bg-black/60 z-50 xl:hidden"
             />
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 w-80 max-w-[85vw] h-full z-50 md:hidden"
+              className="fixed top-0 right-0 w-80 max-w-[85vw] h-full z-50 xl:hidden"
             >
               {PanelContent}
             </motion.div>

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { SearchIcon, ThemeMoonIcon, SettingsGearIcon, SupportHeartIcon } from "../Shared/icons";
+import { SearchIcon, ThemeMoonIcon, ThemeSunIcon, SettingsGearIcon, SupportHeartIcon } from "../Shared/icons";
 import { TextAlignJustify, X } from "lucide-react";
 import { useSettings } from "../Context/SettingsContext";
 
@@ -24,7 +24,7 @@ const IconButton = ({
           flex size-[34px] min-w-[34px]
           items-center justify-center
           rounded-full
-          bg-[var(--primary-black)]
+          bg-[var(--bg-secondary)]
           text-[var(--primary-green)]
           transition-all duration-300 ease-out
           hover:scale-105 active:scale-90
@@ -40,7 +40,7 @@ const IconButton = ({
           absolute top-full mt-2
           whitespace-nowrap
           rounded-md
-          bg-[var(--primary-white)] text-black text-[12px]
+          bg-[var(--bg-surface)] text-[var(--text-primary)] text-[12px]
           px-3 py-1
           opacity-0 scale-95
           transition-all duration-200
@@ -56,15 +56,17 @@ const IconButton = ({
 export const Navbar = ({
   onMenuClick,
   isDrawerOpen,
+  onSearchClick,
 }: {
   onMenuClick?: () => void;
   isDrawerOpen?: boolean;
+  onSearchClick?: () => void;
 }) => {
-  const { isMobileSettingsOpen, setIsMobileSettingsOpen } = useSettings();
+  const { isMobileSettingsOpen, setIsMobileSettingsOpen, toggleDarkMode, isDarkMode } = useSettings();
 
   const items = [
-    { label: "Search", icon: <SearchIcon />, onClick: () => {} },
-    { label: "Theme", icon: <ThemeMoonIcon />, onClick: () => {} },
+    { label: "Search", icon: <SearchIcon />, onClick: onSearchClick },
+    { label: isDarkMode ? "Light Mode" : "Dark Mode", icon: isDarkMode ? <ThemeSunIcon /> : <ThemeMoonIcon />, onClick: toggleDarkMode },
     { 
       label: "Settings", 
       icon: <SettingsGearIcon />, 
@@ -80,9 +82,8 @@ export const Navbar = ({
         sticky top-0 z-50
         flex h-[60px] w-full
         items-center justify-between
-        border-b border-zinc-200
-        bg-white px-6
-        dark:bg-zinc-950 dark:border-zinc-800
+        border-b border-[var(--border)]
+        bg-[var(--surface)]
         px-6 py-2
       "
     >
@@ -91,16 +92,16 @@ export const Navbar = ({
         <button
           type="button"
           onClick={onMenuClick}
-          className="relative z-50 flex items-center justify-center rounded-full border border-zinc-200 p-2 text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-200 md:hidden"
+          className="relative z-50 flex items-center justify-center rounded-full border border-[var(--border)] p-2 text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] lg:hidden"
           aria-label="Toggle surah drawer"
         >
           {isDrawerOpen ? <X size={18} /> : <TextAlignJustify size={18} />}
         </button>
         <div className="leading-tight">
-          <p className="text-base font-bold md:text-lg text-[var(--primary-white)]">
+          <p className="text-base font-bold md:text-lg text-[var(--text-primary)]">
             Quran Mazid
           </p>
-          <p className="text-[10px] text-zinc-500 max-md:hidden">
+          <p className="text-[10px] text-[var(--text-secondary)] max-md:hidden">
             Read, Study, and Learn The Quran
           </p>
         </div>
@@ -122,7 +123,7 @@ export const Navbar = ({
             text-white text-sm font-medium
             transition-all duration-300
             hover:opacity-90 active:scale-95
-            max-md:hidden
+            max-lg:hidden
           "
         >
           Support Us <SupportHeartIcon />

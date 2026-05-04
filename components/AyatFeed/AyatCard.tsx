@@ -54,11 +54,11 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
     <div className="relative group flex items-center justify-center">
       <button
         onClick={onClick}
-        className="cursor-pointer p-2 text-zinc-500 transition-colors rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+        className="cursor-pointer p-2 text-[var(--text-secondary)] transition-colors rounded-full bg-[var(--surface-secondary)]"
       >
         <Icon size={20} />
       </button>
-      <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-[var(--primary-white)] text-black text-[12px] px-2 py-1 opacity-0 scale-95 transition-all group-hover:opacity-100 group-hover:scale-100 z-10 hidden md:block">
+      <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-[var(--surface-secondary)] text-[var(--text-primary)] text-[12px] px-2 py-1 opacity-0 scale-95 transition-all group-hover:opacity-100 group-hover:scale-100 z-10 hidden md:block">
         {tooltip}
       </span>
     </div>
@@ -67,8 +67,8 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col md:flex-row gap-4 border md:gap-6 px-4 md:px-6 p-4 md:pt-6 border-b border-zinc-200 dark:border-zinc-800/50 transition-colors scroll-mt-24 ${
-        isCurrentPlaying ? "bg-[var(--primary-green)]/15 dark:bg-[var(--primary-green)]/15 rounded-xl" : ""
+      className={`flex flex-col md:flex-row gap-4 border md:gap-6 px-4 md:px-6 p-4 md:pt-6 border-b border-[var(--border)]/10 transition-colors scroll-mt-24 ${
+        isCurrentPlaying ? "bg-(--primary-green)/15 rounded-xl" : ""
       }`}
     >
       {/* Mobile Top */}
@@ -108,23 +108,25 @@ export const AyatCard = ({ surahId, verse }: AyatCardProps) => {
             lineHeight: "1.8",
           }}
           className={`text-right ${
-            isCurrentPlaying ? "text-[var(--primary-green)]" : "text-[var(--primary-white)] dark:text-[var(--primary-white)]"
+            isCurrentPlaying ? "text-[var(--primary-green)]" : "text-[var(--text-primary)]/70"
           } transition-colors duration-300`}
         >
           {verse.text}
-          <span className="inline-flex items-center justify-center relative mx-2">
-            <span className="text-[0.4em] absolute">{toArabicNumber(verse.id)}</span>
-            <span className="text-[0.8em]">۝</span>
+          <span className="inline-flex items-center justify-center relative mx-2 translate-y-[3px]">
+             <span className="text-[1.3em] leading-none opacity-80 font-islamic">۝</span>
+             <span className="absolute inset-0 flex items-center justify-center text-[0.35em] font-sans font-bold pb-1">
+               {toArabicNumber(verse.id)}
+             </span>
           </span>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-[10px] md:text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <span className="text-[10px] md:text-xs font-semibold text-[var(--text-secondary)]/80 uppercase tracking-wider">
             SAHEEH INTERNATIONAL
           </span>
           <div
             style={{ fontSize: `${translationFontSize}px`, lineHeight: "1.6" }}
-            className="text-[var(--primary-white)] dark:text-[var(--primary-white)]"
+            className="text-[var(--text-primary)]/80"
           >
             {verse.translation}
           </div>
