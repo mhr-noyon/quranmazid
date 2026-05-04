@@ -8,55 +8,70 @@ import { AyatFeed } from "../AyatFeed/AyatFeed";
 import { RightPanel } from "../SidePanel/RightPanel";
 import { AudioPlayer } from "../AudioPlayer/AudioPlayer";
 import { useAudio } from "../AudioPlayer/AudioContext";
+import { SearchModal } from "./SearchModal";
 
-import { Surah, SurahIndexItem } from "../../types";
+import { FeedData, Surah, SurahIndexItem } from "../../types";
 
+export type FeedQuery = { type: "surah" | "juz" | "page"; id: number };
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [surahsList, setSurahsList] = useState<SurahIndexItem[]>([]);
-  const [activeSurahInfo, setActiveSurahInfo] = useState<SurahIndexItem | null>(null);
-  const [surah, setSurah] = useState<Surah | null>(null);
+  const [activeFeedQuery, setActiveFeedQuery] = useState<FeedQuery | null>(null);
+  const [feedData, setFeedData] = useState<FeedData | null>(null);
   const { stop } = useAudio();
   
   useEffect(()=>{
-    console.log("useeffet from appshell: ", activeSurahInfo)
-    if (!activeSurahInfo?.id) {
-      setSurah(null);
+    if (!activeFeedQuery) {
+      setFeedData(null);
       return;
     }
 
     let isMounted = true;
 
-    async function loadSurah() {
-      setSurah(null);
+    async function loadFeed() {
+      setFeedData(null);
       try {
-        const response = await fetch(`/api/surah?id=${activeSurahInfo?.id}`);
-        const data = (await response.json()) as Surah;
-        console.log("Data->>>", data);
-        if (isMounted) {
-          const newSurah = {
-            ...data,
-            transliteration: activeSurahInfo?.transliteration,
-          } as Surah;
-          console.log("newSurah->>>>", newSurah)
-          setSurah(newSurah);
+        let endpoint = "";
+        if (activeFeedQuery?.type === "surah") endpoint = `/api/surah?id=${activeFeedQuery.id}`;
+        else if (activeFeedQuery?.type === "juz") endpoint = `/api/juz?id=${activeFeedQuery.id}`;
+        else if (activeFeedQuery?.type === "page") endpoint = `/api/page?id=${activeFeedQuery.id}`;
+
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        
+        if (isMounted && data) {
+          if (activeFeedQuery?.type === "surah") {
+            const surahInfo = surahsList.find(s => s.id === activeFeedQuery.id);
+            const medinanSurahs = [2, 3, 4, 5, 8, 9, 13, 22, 24, 33, 47, 48, 49, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 76, 98, 99, 110];
+            const isMedinan = medinanSurahs.includes(data.id);
+            
+            setFeedData({
+              id: data.id,
+              type: "surah",
+              title: surahInfo?.transliteration || data.transliteration || data.name,
+              subtitle: `Ayah-${data.total_verses}, ${isMedinan ? "Madinah" : "Makkah"}`,
+              verses: data.verses.map((v: any) => ({ ...v, surah_id: data.id })),
+              revelation_place: isMedinan ? "madina" : "makkah"
+            });
+          } else {
+            setFeedData(data as FeedData);
+          }
         }
       } catch {
-        if (isMounted) {
-          setSurah(null);
-        }
+        if (isMounted) setFeedData(null);
       }
     }
 
-    loadSurah();
+    loadFeed();
     return () => {
       isMounted = false;
     };
-  }, [activeSurahInfo])
+  }, [activeFeedQuery, surahsList]);
 
   useEffect(()=>{
-    if(activeSurahInfo?.id){
+    if(activeFeedQuery){
       return;
     }
 
@@ -68,11 +83,11 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
         const data = (await response.json()) as SurahIndexItem[];
         if (isMounted && data.length > 0) {
           setSurahsList(data);
-          setActiveSurahInfo(data[0]);
+          setActiveFeedQuery({ type: "surah", id: data[0].id });
         } 
       } catch {
         if (isMounted) {
-          setActiveSurahInfo(null);
+          setActiveFeedQuery(null);
         }
       }
     }
@@ -81,58 +96,74 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
     return () => {
       isMounted = false;
     };
-  }, [])
+  }, []);
 
-  console.log('Active Surah->>>>',activeSurahInfo);
-  console.log('surah->>>',surah);
-
-  const handleNextSurah = () => {
-    if (!activeSurahInfo || surahsList.length === 0) return;
-    const currentIndex = surahsList.findIndex(s => s.id === activeSurahInfo.id);
+  const handleNextFeed = () => {
+    if (!activeFeedQuery || activeFeedQuery.type !== "surah" || surahsList.length === 0) return;
+    const currentIndex = surahsList.findIndex(s => s.id === activeFeedQuery.id);
     if (currentIndex >= 0 && currentIndex < surahsList.length - 1) {
       stop();
-      setActiveSurahInfo(surahsList[currentIndex + 1]);
+      setActiveFeedQuery({ type: "surah", id: surahsList[currentIndex + 1].id });
     }
   };
 
-  const handlePrevSurah = () => {
-    if (!activeSurahInfo || surahsList.length === 0) return;
-    const currentIndex = surahsList.findIndex(s => s.id === activeSurahInfo.id);
+  const handlePrevFeed = () => {
+    if (!activeFeedQuery || activeFeedQuery.type !== "surah" || surahsList.length === 0) return;
+    const currentIndex = surahsList.findIndex(s => s.id === activeFeedQuery.id);
     if (currentIndex > 0) {
       stop();
-      setActiveSurahInfo(surahsList[currentIndex - 1]);
+      setActiveFeedQuery({ type: "surah", id: surahsList[currentIndex - 1].id });
     }
   };
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-900">
       <Sidebar/>
-      <div className="flex h-screen flex-1 flex-col pb-16 md:pb-0 md:pl-15">
+      <div className="flex h-screen flex-1 flex-col pb-16 lg:pb-0 lg:pl-15">
         <Navbar
           onMenuClick={() => setIsDrawerOpen((prev) => !prev)}
           isDrawerOpen={isDrawerOpen}
+          onSearchClick={() => setIsSearchOpen(true)}
         />        
         <div className="flex flex-1 overflow-hidden relative">
             <SurahDrawer 
-              activeSurahInfo={activeSurahInfo} 
+              activeFeedQuery={activeFeedQuery} 
               isOpen={isDrawerOpen} 
               onClose={() => setIsDrawerOpen(false)} 
               onSurahSelect={(surahInfo) => {
                 stop();
-                setActiveSurahInfo(surahInfo);
+                setActiveFeedQuery({ type: "surah", id: surahInfo.id });
+              }}
+              onJuzSelect={(juzId) => {
+                stop();
+                setActiveFeedQuery({ type: "juz", id: juzId });
+              }}
+              onPageSelect={(pageId) => {
+                stop();
+                setActiveFeedQuery({ type: "page", id: pageId });
               }}
             />
             <AyatFeed 
-              surah={surah} 
-              onNextSurah={handleNextSurah} 
-              onPrevSurah={handlePrevSurah}
-              hasNext={activeSurahInfo ? surahsList.findIndex(s => s.id === activeSurahInfo.id) < surahsList.length - 1 : false}
-              hasPrev={activeSurahInfo ? surahsList.findIndex(s => s.id === activeSurahInfo.id) > 0 : false}
+              feedData={feedData} 
+              onNextFeed={handleNextFeed} 
+              onPrevFeed={handlePrevFeed}
+              hasNext={activeFeedQuery?.type === "surah" ? surahsList.findIndex(s => s.id === activeFeedQuery.id) < surahsList.length - 1 : false}
+              hasPrev={activeFeedQuery?.type === "surah" ? surahsList.findIndex(s => s.id === activeFeedQuery.id) > 0 : false}
             />
             <RightPanel />
         </div>
         <AudioPlayer />
       </div>
+
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+        surahs={surahsList}
+        onSurahSelect={(surahInfo) => {
+          stop();
+          setActiveFeedQuery({ type: "surah", id: surahInfo.id });
+        }}
+      />
     </div>
   );
 };

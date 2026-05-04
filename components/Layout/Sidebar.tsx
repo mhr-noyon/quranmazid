@@ -22,8 +22,8 @@ const ShowButton = ({
 
         ${
           active
-            ? "text-[var(--primary-ash)_500] border-[var(--primary-ash)_500] bg-[var(--primary-ash)/50]"
-            : "text-zinc-400 border-transparent hover:text-[var(--primary-ash)] hover:border-zinc-200 dark:hover:border-zinc-7-00"
+            ? "text-[var(--text-green)] border-(--primary-green)/40 bg-(--primary-green)/10"
+            : "text-[var(--text-secondary)] border-transparent hover:text-[var(--primary-green)] hover:border-(--primary-green)/20"
         }
       `}
     >
@@ -35,17 +35,17 @@ const ShowButton = ({
 /* ================= Sidebar ================= */
 export const Sidebar = () => {
   return (
-    <aside className="fixed left-0 z-50 flex bg-white max-md:border-zinc-100 dark:max-md:border-zinc-800 dark:bg-[#171717]
-      max-md:bottom-0 max-md:h-16 max-md:w-full max-md:border-t
-      md:top-0 md:h-screen md:w-15 md:flex-col md:border-r">
+    <aside className="fixed left-0 z-50 flex bg-[var(--surface-secondary)] 
+      max-lg:bottom-0 max-lg:h-16 max-lg:w-full
+      lg:top-0 lg:h-screen lg:w-15 lg:flex-col">
 
-      <div className="flex h-full w-full items-center max-md:flex-row max-md:justify-evenly md:flex-col md:justify-center relative">
-        <div className="hidden md:flex absolute top-0 py-4 w-full justify-center">
+      <div className="flex h-full w-full items-center max-lg:flex-row max-lg:justify-evenly lg:flex-col lg:justify-center relative">
+        <div className="hidden lg:flex absolute top-0 py-4 w-full justify-center">
           <Link href="/"><LogoIcon /></Link>
         </div>
 
-        <nav className="flex items-center md:flex-col md:gap-8 max-md:gap-10">
-            <div className="flex items-center gap-2.5 max-md:hidden">
+        <nav className="flex items-center lg:flex-col lg:gap-8 max-lg:gap-10">
+            <div className="flex items-center gap-2.5 max-lg:hidden">
           <Link href="/" className="cursor-pointer"><ShowButton><HomeIcon/></ShowButton></Link>
           </div>
           <Link href="/1"><ShowButton><DashboardIcon /></ShowButton></Link>
