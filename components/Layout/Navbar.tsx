@@ -1,25 +1,30 @@
 "use client";
 import React from "react";
-import { SearchIcon, ThemeMoonIcon, SettingsGearIcon, SupportHeartIcon } from "./icons";
+import { SearchIcon, ThemeMoonIcon, SettingsGearIcon, SupportHeartIcon } from "../Shared/icons";
 import { TextAlignJustify, X } from "lucide-react";
+import { useSettings } from "../Context/SettingsContext";
+
 
 /* ================= Icon Button ================= */
 const IconButton = ({
   icon,
   label,
+  onClick,
 }: {
   icon: React.ReactNode;
   label: string;
+  onClick?: () => void;
 }) => {
   return (
     <div className="relative group flex flex-col items-center">
       <button
+        onClick={onClick}
         className="
           cursor-pointer
           flex size-[34px] min-w-[34px]
           items-center justify-center
           rounded-full
-          bg-[#111510]
+          bg-[var(--primary-black)]
           text-[var(--primary-green)]
           transition-all duration-300 ease-out
           hover:scale-105 active:scale-90
@@ -47,7 +52,6 @@ const IconButton = ({
     </div>
   );
 };
-
 /* ================= Navbar ================= */
 export const Navbar = ({
   onMenuClick,
@@ -56,22 +60,30 @@ export const Navbar = ({
   onMenuClick?: () => void;
   isDrawerOpen?: boolean;
 }) => {
+  const { isMobileSettingsOpen, setIsMobileSettingsOpen } = useSettings();
+
   const items = [
-    { label: "Search", icon: <SearchIcon /> },
-    { label: "Theme", icon: <ThemeMoonIcon /> },
-    { label: "Settings", icon: <SettingsGearIcon /> },
+    { label: "Search", icon: <SearchIcon />, onClick: () => {} },
+    { label: "Theme", icon: <ThemeMoonIcon />, onClick: () => {} },
+    { 
+      label: "Settings", 
+      icon: <SettingsGearIcon />, 
+      onClick: () => {
+        setIsMobileSettingsOpen(true);
+      } 
+    },
   ];
 
   return (
     <nav
       className="
         sticky top-0 z-50
-        flex h-[70px] w-full
+        flex h-[60px] w-full
         items-center justify-between
         border-b border-zinc-200
         bg-white px-6
         dark:bg-zinc-950 dark:border-zinc-800
-        px-6 py-3
+        px-6 py-2
       "
     >
       {/* LEFT */}
@@ -97,7 +109,7 @@ export const Navbar = ({
       {/* RIGHT */}
       <div className="flex items-center gap-4">
         {items.map((item, i) => (
-          <IconButton key={i} label={item.label} icon={item.icon} />
+          <IconButton key={i} label={item.label} icon={item.icon} onClick={item.onClick} />
         ))}
 
         <a

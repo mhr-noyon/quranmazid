@@ -1,7 +1,14 @@
-import { Inter } from "next/font/google";
+import { Inter, Amiri_Quran } from "next/font/google";
 import "./globals.css";   
-import { AppShell } from "@/components/AppShell";
-const inter = Inter({ subsets: ["latin"] });
+import { AppShell } from "@/components/Layout/AppShell";
+import { Providers } from "@/components/Context/Providers";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const amiriQuran = Amiri_Quran({ 
+  weight: "400", 
+  subsets: ["arabic"],
+  variable: "--font-amiri-quran"
+});
 
 export const metadata = {
   title: "Quran Mazid",
@@ -18,8 +25,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <AppShell>{children}</AppShell>
+      <body className={`${inter.variable} ${amiriQuran.variable}`}>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

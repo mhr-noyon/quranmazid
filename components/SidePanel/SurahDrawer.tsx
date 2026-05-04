@@ -1,29 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { LogoIcon, SearchIcon } from "@/components/icons";
+import { LogoIcon, SearchIcon } from "../Shared/icons";
 import { X } from "lucide-react";
 
-type SurahIndexItem = {
-  id: number;
-  name: string;
-  transliteration: string;
-  translation: string;
-  total_verses: number;
-};
+import { SurahIndexItem } from "../../types";
 
 type TabKey = "surah" | "juz" | "page";
 
 export const SurahDrawer = ({
+  activeSurahInfo,
   isOpen,
   onClose,
+  onSurahSelect,
 }: {
+  activeSurahInfo: SurahIndexItem | null;
   isOpen: boolean;
   onClose: () => void;
+  onSurahSelect?: (surah: SurahIndexItem) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>("surah");
   const [surahs, setSurahs] = useState<SurahIndexItem[]>([]);
-  const [activeSurahId, setActiveSurahId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -35,15 +32,13 @@ export const SurahDrawer = ({
         const data = (await response.json()) as SurahIndexItem[];
         if (isMounted) {
           setSurahs(data);
-          if (data.length > 0) {
-            setActiveSurahId((prev) => prev ?? data[0].id);
-          }
         }
       } catch {
         if (isMounted) {
           setSurahs([]);
         }
       }
+        console.log("useeffet from drawer: ", activeSurahInfo)
     }
 
     loadSurahs();
@@ -131,8 +126,8 @@ export const SurahDrawer = ({
 
         {/* Surah List */}
         {activeTab === "surah" && (
-            <div className="flex flex-col gap-4 px-4 ">
-          <label className="relative">
+            <div className="flex flex-1 flex-col gap-4 px-4 overflow-hidden">
+          <label className="relative shrink-0">
             <div className="flex flex-row items-center gap-2 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"> 
                 <img src="/searchAsh.svg" alt="search" className="size-5" />
                 <span className="sr-only text-zinc-400/5">Search Surah</span>
@@ -152,13 +147,16 @@ export const SurahDrawer = ({
             <div className="flex-1 overflow-y-auto">
                 <div className="space-y-3">
                 {filteredSurahs.map((surah) => {
-                    const isActive = surah.id === activeSurahId;
+                    const isActive = surah.id === activeSurahInfo?.id;
 
                     return (
                     <button
                         key={surah.id}
                         type="button"
-                        onClick={() => setActiveSurahId(surah.id)}
+                        onClick={() => {
+                          if(onSurahSelect) onSurahSelect(surah);
+                          onClose();
+                        }}
                         className={`cursor-pointer group flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-5 text-left transition hover:bg-[#111510] transition-all duration-200  ${
                         isActive
                             ? "border-[var(--primary-green)]/20 bg-[#111510] text-zinc-900 dark:text-zinc-100"
@@ -171,13 +169,13 @@ export const SurahDrawer = ({
                             </span>
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                            <p className="text-sm font-semibold text-zinc-900 pb-2 dark:text-[var(--primary-white)]">
                             {surah.transliteration}
                             </p>
                             <p className="text-xs text-zinc-500">{surah.translation}</p>
                         </div>
                         </div>
-                        <div className="text-right text-base text-zinc-900 dark:text-zinc-100 font-[var(--font-calligraphy)]">
+                        <div className="text-right text-base text-zinc-900 dark:text-[var(--primary-white)] font-[var(--font-calligraphy)]">
                         {surah.name}
                         </div>
                     </button>
