@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'KFGQ';
+  src: url('/fonts/KFGQPC-Regular/KFGQPC Uthmanic Script HAFS Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PDMS-Islamic';
+  src: url('/fonts/_PDMS_IslamicFont Regular/_PDMS_IslamicFont Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #f7f6f2;
   --foreground: #111111;
@@ -7,8 +23,10 @@
   --border: #e6e4de;
   --primary-green: #428038;
   --primary-ash: #818683;
+  --primary-dark-green: #111510;
   --primary-white: #c3c3c4;
   --primary-black: #0d0d0d;
+  --primary-gray: #202020;
   --another: #8eb388;
   --font-inter: "__Inter_e97114", "__Inter_Fallback_e97114";
   --font-kalpurush: "__kalpurush_83740d", "__kalpurush_Fallback_83740d";
@@ -25,30 +43,23 @@
 }
 
 @layer base {
-  /* 1. Webkit Browsers (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
-    width: 6px; /* Slimmer width */
+    width: 6px; 
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: transparent; /* Makes the track invisible */
+    background: transparent; 
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #e4e4e7; /* zinc-200 */
+    background: var(--primary-green); 
     border-radius: 10px;
     transition: background 0.3s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #10b981; /* emerald-500 or your primary-green */
-  }
-
-  /* 2. Firefox Support */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #e4e4e7 transparent;
+    background: var(--primary-green); 
   }
 }
 

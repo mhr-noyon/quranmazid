@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { LogoIcon, HomeIcon, DashboardIcon, ExploreIcon, BookmarkIcon, MenuIcon } from "./icons";
+import { LogoIcon, HomeIcon, DashboardIcon, ExploreIcon, BookmarkIcon, MenuIcon } from "../Shared/icons";
 
 /* ================= Button ================= */
 const ShowButton = ({
@@ -35,9 +35,9 @@ const ShowButton = ({
 /* ================= Sidebar ================= */
 export const Sidebar = () => {
   return (
-    <aside className="fixed left-0 z-50 flex bg-white border-zinc-100 dark:border-zinc-800 dark:bg-[#171717]
+    <aside className="fixed left-0 z-50 flex bg-white max-md:border-zinc-100 dark:max-md:border-zinc-800 dark:bg-[#171717]
       max-md:bottom-0 max-md:h-16 max-md:w-full max-md:border-t
-      md:top-0 md:h-screen md:w-16 md:flex-col md:border-r">
+      md:top-0 md:h-screen md:w-15 md:flex-col md:border-r">
 
       <div className="flex h-full w-full items-center max-md:flex-row max-md:justify-evenly md:flex-col md:justify-center relative">
         <div className="hidden md:flex absolute top-0 py-4 w-full justify-center">
