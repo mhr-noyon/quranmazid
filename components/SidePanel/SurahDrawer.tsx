@@ -230,7 +230,7 @@ export const SurahDrawer = ({
                 </label>
 
                 <div className="flex flex-1 flex-col overflow-hidden">
-                  <div className="flex-1 overflow-y-auto hide-scrollbar">
+                  <div className="flex-1 overflow-y-auto hide-scrollbar pr-2">
                     <div className="space-y-3 pb-4">
                       {filteredSurahs.map((surah) => {
                         const isActive = activeFeedQuery?.type === "surah" && activeFeedQuery.id === surah.id;
@@ -286,7 +286,7 @@ export const SurahDrawer = ({
                     <Search size={18} />
                   </span>
                 </label>
-                <div className="flex-1 overflow-y-auto hide-scrollbar">
+                <div className="flex-1 overflow-y-auto hide-scrollbar pr-2">
                   <div className="space-y-3 pb-4">
                     {filteredJuzs.map((juz) => {
                       const isExpanded = expandedJuz === juz.juz_number;
@@ -392,7 +392,7 @@ export const SurahDrawer = ({
                     <Search size={18} />
                   </span>
                 </label>
-                <div className="flex-1 overflow-y-auto hide-scrollbar">
+                <div className="flex-1 overflow-y-auto hide-scrollbar pr-2">
                   <div className="space-y-3 pb-4">
                     {Array.from({ length: 604 }, (_, i) => i + 1).filter(p => !pageQuery || p.toString().includes(pageQuery)).map((page) => {
                        const isActive = activeFeedQuery?.type === 'page' && activeFeedQuery.id === page;
